@@ -2,6 +2,27 @@ Highveld Biotech Assistant
 
 A small retrieval‑augmented chatbot. FastAPI backend with JSON/streaming endpoints, a minimal web UI, and a PDF quote generator. The knowledge base is a CSV embedded into a FAISS index.
 
+Purpose
+- Answer questions about lab tests, pricing, turnaround times, and drop‑off details using a small, local RAG stack.
+- Provide simple endpoints for chat and streaming, plus a downloadable quote PDF for hand‑off to sales.
+
+Tech stack
+- Python 3.11+
+- FastAPI, Uvicorn
+- LangChain (chat + retriever), langchain‑openai, OpenAI Chat/Embeddings
+- FAISS (vector index), pandas (CSV ingest)
+- ReportLab (PDF)
+- pytest (tests), python‑dotenv (env)
+
+Key features
+- RAG over CSV with FAISS and MMR retriever
+- Guardrails: address override, keyword‑overlap + vector‑distance gating, “not sure” fallback, price guard
+- Streaming: /stream (text) and /stream/sse (SSE)
+- Quote PDF generation endpoint
+- Optional conversation memory (SQLite)
+- Prompt versioning and simple per‑IP rate limiting
+- Unit tests for core behaviors; eval scaffolding present
+
 Project structure
 - run_api.py
 - api/server.py
@@ -29,6 +50,29 @@ Run API
 - `python run_api.py`
 - Health: GET `/healthz`
 - UI: http://127.0.0.1:8000/
+
+Example usage
+- Chat
+```bash
+curl -s -X POST http://127.0.0.1:8000/chat \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"How much is a full SANS 241 test?"}'
+```
+
+- Streaming (plain text chunks)
+```bash
+curl -N -s -X POST http://127.0.0.1:8000/stream \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Summarise Core Water Analysis"}'
+```
+
+- Quote PDF
+```bash
+curl -s -X POST http://127.0.0.1:8000/quote/pdf \
+  -H 'Content-Type: application/json' \
+  -d '{"message":"Quote for Core Water Analysis and Full SANS 241"}' \
+  -o quote.pdf
+```
 
 Endpoints
 - POST `/chat`
