@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Highveld Biotech Chatbot</title>
+    <link rel="stylesheet" href="/static/styles.css" />
+</head>
+
+<body>
+    <header class="hv-header">
+        <div class="brand">
+            <img src="/assets/logo.png" alt="Highveld Biotech" class="logo-img" />
+            <h1>Highveld Biotech Assistant</h1>
+        </div>
+    </header>
+    <main class="container">
+        <div id="chat" class="chat"></div>
+        <form id="composer" class="composer">
+            <input id="message" type="text" placeholder="Type your message…" autocomplete="off" />
+            <button type="submit">Send</button>
+        </form>
+        <!-- Quote Modal -->
+        <div id="quoteModal" class="modal" hidden>
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Create a Quote</h2>
+                    <button type="button" class="close" id="closeQuote">×</button>
+                </div>
+                <form id="quoteForm">
+                    <div class="grid">
+                        <label>Requested tests (required)
+                            <textarea id="q_tests" required
+                                placeholder="e.g., Full SANS 241 test; E. coli count"></textarea>
+                        </label>
+                        <label>Additional details
+                            <textarea id="q_context"
+                                placeholder="Anything else that helps, e.g., borehole water, sample type, preferred TAT"></textarea>
+                        </label>
+                        <label>Number of samples
+                            <input id="q_samples" type="number" min="1" placeholder="1" />
+                        </label>
+                        <label>Turnaround preference
+                            <select id="q_tat_pref">
+                                <option value="">No preference</option>
+                                <option>Fastest available</option>
+                                <option>Standard</option>
+                            </select>
+                        </label>
+                        <label>Full name (required)
+                            <input id="q_name" type="text" required />
+                        </label>
+                        <label>Email (required)
+                            <input id="q_email" type="email" required />
+                        </label>
+                        <label>Company
+                            <input id="q_company" type="text" />
+                        </label>
+                        <label>Phone
+                            <input id="q_phone" type="tel" />
+                        </label>
+                        <label>Reference / PO
+                            <input id="q_reference" type="text" />
+                        </label>
+                        <label>Billing address
+                            <input id="q_billing" type="text" />
+                        </label>
+                        <label>VAT number
+                            <input id="q_vat" type="text" />
+                        </label>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="secondary" id="cancelQuote">Cancel</button>
+                        <button type="submit" class="primary">Download Quote (PDF)</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+    <footer class="hv-footer">
+        <small>© Highveld Biotech SA PTY Ltd.</small>
+    </footer>
+
+    <script>
+        const chat = document.getElementById('chat');
+        const form = document.getElementById('composer');
+        const input = document.getElementById('message');
+        const quoteModal = document.getElementById('quoteModal');
+        const quoteForm = document.getElementById('quoteForm');
+        const closeQuote = document.getElementById('closeQuote');
+        const cancelQuote = document.getElementById('cancelQuote');
+        let sessionId = null;
+        let typingEl = null;
+        let lastUserMessage = '';
+        let quoteOffered = false;
+        let pendingTests = '';
+
+        function addMsg(role, text) {
+            const el = document.createElement('div');
+            el.className = `msg ${role}`;
+            el.textContent = text;
+            chat.appendChild(el);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function showTyping() {
+            if (typingEl) return;
+            typingEl = document.createElement('div');
+            typingEl.className = 'msg bot typing';
+            typingEl.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+            chat.appendChild(typingEl);
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        function hideTyping() {
+            if (typingEl) { typingEl.remove(); typingEl = null; }
+        }
+
+        function addBotContainer() {
+            const el = document.createElement('div');
+            el.className = 'msg bot';
+            el.textContent = '';
+            chat.appendChild(el);
+            return el;
+        }
+
+        async function sendStreaming(text) {
+            // Try streaming endpoint first
+            const controller = new AbortController();
+            const res = await fetch('/stream', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: text, session_id: sessionId }),
+                signal: controller.signal
+            });
+            if (!res.ok || !res.body) throw new Error('no stream');
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            const bot = addBotContainer();
+            hideTyping();
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+                bot.textContent += decoder.decode(value, { stream: true });
+                chat.scrollTop = chat.scrollHeight;
+            }
+            maybeOfferQuote(lastUserMessage);
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const text = input.value.trim();
+            if (!text) return;
+            addMsg('user', text);
+            lastUserMessage = text;
+            input.value = '';
+            try {
+                showTyping();
+                try {
+                    await sendStreaming(text);
+                } catch (streamErr) {
+                    // Fallback to non-streaming
+                    const res = await fetch('/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ message: text, session_id: sessionId })
+                    });
+                    const data = await res.json();
+                    sessionId = data.session_id || sessionId;
+                    hideTyping();
+                    addMsg('bot', data.answer || '[no answer]');
+                    maybeOfferQuote(lastUserMessage);
+                }
+            } catch (err) {
+                hideTyping();
+                addMsg('bot', 'Sorry, there was a problem reaching the server.');
+            }
+        });
+
+        // Greet
+        addMsg('bot', 'Hi! How can I help with tests, pricing, turnaround times, or drop-off details today?');
+
+        // Quote modal controls
+        function openQuote() {
+            // Prefill tests with last user message if it looks like a quote request
+            const testsEl = document.getElementById('q_tests');
+            if (pendingTests) {
+                testsEl.value = pendingTests;
+            } else if (lastUserMessage && /quote|price|cost|test/i.test(lastUserMessage)) {
+                testsEl.value = testsEl.value || lastUserMessage;
+            }
+            quoteModal.hidden = false;
+        }
+        function closeQuoteModal() { quoteModal.hidden = true; }
+
+        closeQuote.addEventListener('click', closeQuoteModal);
+        cancelQuote.addEventListener('click', closeQuoteModal);
+
+        function addQuoteOffer(testsText) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'msg bot';
+            const p = document.createElement('div');
+            p.textContent = `Would you like a formal quote for: ${testsText}? You can add other tests you’re interested in, then confirm.`;
+            const actions = document.createElement('div');
+            actions.className = 'inline-actions';
+            const confirmBtn = document.createElement('button');
+            confirmBtn.type = 'button';
+            confirmBtn.className = 'inline-btn primary';
+            confirmBtn.textContent = 'Confirm & Continue';
+            const addMoreBtn = document.createElement('button');
+            addMoreBtn.type = 'button';
+            addMoreBtn.className = 'inline-btn';
+            addMoreBtn.textContent = 'Add More Tests';
+            actions.appendChild(confirmBtn);
+            actions.appendChild(addMoreBtn);
+            wrapper.appendChild(p);
+            wrapper.appendChild(actions);
+            chat.appendChild(wrapper);
+            chat.scrollTop = chat.scrollHeight;
+
+            confirmBtn.addEventListener('click', () => { openQuote(); });
+            addMoreBtn.addEventListener('click', () => {
+                addMsg('bot', 'Sure — tell me any other tests to include. When ready, type “confirm quote”.');
+            });
+        }
+
+        function maybeOfferQuote(userText) {
+            if (quoteOffered) return;
+            if (!userText) return;
+            // Simple heuristic: if message suggests pricing/tests, offer a quote
+            if (/quote|price|cost|test|sans|e\.?\s*coli|241/i.test(userText)) {
+                pendingTests = userText;
+                quoteOffered = true;
+                addQuoteOffer(pendingTests);
+            }
+        }
+
+        // If the user types “confirm quote”, open the form using the last/pending tests
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                const val = input.value.trim().toLowerCase();
+                if (val === 'confirm quote' || val === 'yes, quote' || val === 'yes quote') {
+                    e.preventDefault();
+                    pendingTests = pendingTests || lastUserMessage || '';
+                    openQuote();
+                }
+            }
+        });
+
+        quoteForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const tests = document.getElementById('q_tests').value.trim();
+            const context = document.getElementById('q_context').value.trim();
+            const samples = document.getElementById('q_samples').value.trim();
+            const tatPref = document.getElementById('q_tat_pref').value.trim();
+            const name = document.getElementById('q_name').value.trim();
+            const email = document.getElementById('q_email').value.trim();
+            const company = document.getElementById('q_company').value.trim();
+            const phone = document.getElementById('q_phone').value.trim();
+            const reference = document.getElementById('q_reference').value.trim();
+            const billing = document.getElementById('q_billing').value.trim();
+            const vat = document.getElementById('q_vat').value.trim();
+
+            if (!tests) { alert('Please specify the test(s) you want quoted.'); return; }
+            if (!name || !email) { alert('Please provide your name and email.'); return; }
+
+            // Build the message/context for the server
+            let message = tests;
+            if (samples) { message = `Quote for ${samples} sample(s): ${message}`; }
+            let extra = context;
+            if (tatPref) { extra = `${extra}\nPreferred TAT: ${tatPref}`.trim(); }
+
+            const payload = {
+                message,
+                session_id: sessionId,
+                context: extra || undefined,
+                client: {
+                    name, email,
+                    company: company || undefined,
+                    phone: phone || undefined,
+                    reference: reference || undefined,
+                    billing_address: billing || undefined,
+                    vat_no: vat || undefined
+                }
+            };
+
+            try {
+                const res = await fetch('/quote/pdf', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const txt = await res.text();
+                    throw new Error(txt || 'Failed to generate PDF');
+                }
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url; a.download = 'highveld_quote.pdf';
+                document.body.appendChild(a); a.click(); a.remove();
+                URL.revokeObjectURL(url);
+                closeQuoteModal();
+                addMsg('bot', 'I’ve prepared your quote. The PDF has been downloaded.');
+            } catch (err) {
+                alert('Sorry, could not generate the quote.');
+            }
+        });
+    </script>
+</body>
+
+</html>

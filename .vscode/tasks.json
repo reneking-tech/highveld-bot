@@ -1,0 +1,36 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run tests",
+			"type": "shell",
+			"command": "pytest -q",
+			"group": "test"
+		},
+		{
+			"label": "Run tests (venv python)",
+			"type": "shell",
+			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m pytest -q",
+			"group": "test"
+		},
+		{
+			"label": "Run tests (venv)",
+			"type": "shell",
+			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m pytest -q",
+			"group": "test"
+		}
+		,
+		{
+			"label": "Lint (ruff)",
+			"type": "shell",
+			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m ruff check .",
+			"group": "test"
+		},
+		{
+			"label": "Typecheck (mypy)",
+			"type": "shell",
+			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m mypy .",
+			"group": "test"
+		}
+	]
+}

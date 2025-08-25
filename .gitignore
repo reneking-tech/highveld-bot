@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual envs
+.venv/
+.env
+.env.*
+
+# Data & indices
+.vectordb/
+.data/
+
+# Tests & tooling caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# OS/editor
+.DS_Store
+*.swp
+*.swo
+
+# Build outputs
+build/
+dist/
+site/
+
+# Byte-compiled / Jupyter
+.ipynb_checkpoints/
