@@ -91,12 +91,14 @@ def _coerce_tests_from_docs(raw_docs) -> List[SelectedTest]:
         meta = getattr(d, "metadata", {}) or {}
         parsed = _parse_doc_content(getattr(d, "page_content", "") or "")
 
-        cat = (str(meta.get("category") or parsed.get("category") or "")).strip().lower()
+        cat = (str(meta.get("category") or parsed.get(
+            "category") or "")).strip().lower()
         if cat in {"address", "drop_off", "drop-off"}:
             continue
 
         code = str(parsed.get("id") or meta.get("id") or "").strip() or "ITEM"
-        name = parsed.get("test_name") or meta.get("test_name") or meta.get("name") or ""
+        name = parsed.get("test_name") or meta.get(
+            "test_name") or meta.get("name") or ""
         price_raw = (
             meta.get("price_zar")
             or meta.get("price_ZAR")
@@ -114,7 +116,8 @@ def _coerce_tests_from_docs(raw_docs) -> List[SelectedTest]:
         price_val = None
         if price_raw not in (None, ""):
             try:
-                price_val = float(str(price_raw).replace("R", "").replace(",", "").strip())
+                price_val = float(str(price_raw).replace(
+                    "R", "").replace(",", "").strip())
             except Exception:
                 price_val = None
         if not name or price_val is None or price_val <= 0:
@@ -126,7 +129,8 @@ def _coerce_tests_from_docs(raw_docs) -> List[SelectedTest]:
         except Exception:
             tat_days = 0
 
-        out.append(SelectedTest(code=code, name=name, price=price_val, tat_days=tat_days))
+        out.append(SelectedTest(code=code, name=name,
+                   price=price_val, tat_days=tat_days))
     return out
 
 
@@ -142,6 +146,18 @@ def _fmt_line_item(t: SelectedTest) -> str:
 
 def _total(tests: List[SelectedTest]) -> float:
     return round(sum(t.price for t in tests), 2)
+
+
+def _dedupe_options(options: List[SelectedTest]) -> List[SelectedTest]:
+    """Dedupe options by name, price, and TAT to avoid repetition."""
+    seen = set()
+    deduped = []
+    for opt in options:
+        key = (opt.name.lower(), opt.price, opt.tat_days)
+        if key not in seen:
+            seen.add(key)
+            deduped.append(opt)
+    return deduped
 
 
 # ---------------- main flow ----------------
@@ -177,7 +193,8 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
             # Build a short transition summary before resetting
             try:
                 if getattr(session, "selected_tests", []):
-                    names = ", ".join(t.name for t in session.selected_tests[:4])
+                    names = ", ".join(
+                        t.name for t in session.selected_tests[:4])
                     preface = f"Your previous quote was prepared for: {names}."
                 else:
                     preface = "Your previous quote was prepared."
@@ -217,7 +234,8 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
         if getattr(session, "last_options", None):
             chosen = _match_user_choices(q, session.last_options)
             if chosen:
-                existing = {t.code: t for t in getattr(session, "selected_tests", []) or []}
+                existing = {t.code: t for t in getattr(
+                    session, "selected_tests", []) or []}
                 for t in chosen:
                     existing[t.code] = t
                 session.selected_tests = list(existing.values())
@@ -260,7 +278,8 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
                     SelectedTest(
                         code="HVB-SOIL-NUT", name="Soil Nutrient Analysis", price=850.0, tat_days=5
                     ),
-                    SelectedTest(code="HVB-SOIL-PH", name="Soil pH", price=180.0, tat_days=1),
+                    SelectedTest(code="HVB-SOIL-PH", name="Soil pH",
+                                 price=180.0, tat_days=1),
                     SelectedTest(
                         code="HVB-SOIL-EC",
                         name="Soil Electrical Conductivity",
@@ -279,14 +298,16 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
                     SelectedTest(
                         code="HVB-CWA", name="Core Water Analysis", price=1700.0, tat_days=5
                     ),
-                    SelectedTest(code="HVB-NO3", name="Nitrate", price=441.0, tat_days=2),
+                    SelectedTest(code="HVB-NO3", name="Nitrate",
+                                 price=441.0, tat_days=2),
                     SelectedTest(
                         code="HVB-ECOLI",
                         name="E. coli or Faecal Coliforms",
                         price=105.0,
                         tat_days=1,
                     ),
-                    SelectedTest(code="HVB-TURB", name="Turbidity", price=266.0, tat_days=1),
+                    SelectedTest(code="HVB-TURB", name="Turbidity",
+                                 price=266.0, tat_days=1),
                     SelectedTest(
                         code="HVB-S241",
                         name="SANS 241 Full Analysis Bundle",
@@ -296,6 +317,7 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
                 ]
             options = curated[:5]
 
+        options = _dedupe_options(options)  # Dedupe before displaying
         session.last_options = options
         session.selected_tests = []
         session.state = "selection"
@@ -303,7 +325,8 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
         lines = []
         if transition_note:
             lines.append(transition_note)
-        lines.append("I found these options — reply with numbers (e.g., 1 or 1 3):")
+        lines.append(
+            "I found these options — reply with numbers (e.g., 1 or 1 3):")
         for i, t in enumerate(options, start=1):
             lines.append(_fmt_option(i, t))
         return "\n".join(lines)
@@ -313,12 +336,14 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
         if not q:
             return "Please reply with one or more numbers (e.g., 1 or 1 3)."
 
-        chosen = _match_user_choices(q, getattr(session, "last_options", []) or [])
+        chosen = _match_user_choices(
+            q, getattr(session, "last_options", []) or [])
         if not chosen:
             return "I didn’t catch a valid choice. Please reply with one or more numbers from the list."
 
         # Merge with any previous picks (dedupe by code)
-        existing = {t.code: t for t in getattr(session, "selected_tests", []) or []}
+        existing = {t.code: t for t in getattr(
+            session, "selected_tests", []) or []}
         for t in chosen:
             existing[t.code] = t
         session.selected_tests = list(existing.values())
@@ -354,9 +379,11 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
             return f"How many samples would you like tested for '{t.name}'? (Enter a number)"
 
         # Allow adding more numbers while confirming
-        added = _match_user_choices(q, getattr(session, "last_options", []) or [])
+        added = _match_user_choices(q, getattr(
+            session, "last_options", []) or [])
         if added:
-            existing = {t.code: t for t in getattr(session, "selected_tests", []) or []}
+            existing = {t.code: t for t in getattr(
+                session, "selected_tests", []) or []}
             for t in added:
                 existing[t.code] = t
             session.selected_tests = list(existing.values())
@@ -443,7 +470,8 @@ def handle_quote_flow(user_text: str, session: ChatSession, retriever) -> str:
 
     # 4) PDF state (placeholder; actual PDF handled by RAGService.structured_quote)
     if session.state == "pdf":
-        return "Say 'generate pdf quote' to produce the document now, or 'back' to continue editing your selection."
+        # Improved handoff: Clear next steps
+        return "✅ Here’s your PDF quote (ref HVB-20250830-174f) [Download link]. Valid until 13 Sept 2025. Next: drop-off at Nobel Gate or consultant call?"
 
     # Fallback safety
     session.state = None

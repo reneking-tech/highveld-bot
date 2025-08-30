@@ -1,8 +1,12 @@
 """Prompt text for RAG interactions (system and user templates)."""
 
+from __future__ import annotations
+
 import os
 import json
 import app.config as cfg
+from typing import Optional, Dict, Any, List, Tuple
+from langchain.schema import SystemMessage
 
 
 def _read_text(path: str, max_chars: int = 4000) -> str:
@@ -19,7 +23,8 @@ def _read_text(path: str, max_chars: int = 4000) -> str:
 def _load_training_examples(category=None, count=5):
     """Load training examples from JSON file, optionally filtered by category."""
     try:
-        training_file = os.path.join(cfg.PROJECT_ROOT, "data", "training_examples.json")
+        training_file = os.path.join(
+            cfg.PROJECT_ROOT, "data", "training_examples.json")
         if not os.path.exists(training_file):
             return []
 
@@ -47,6 +52,18 @@ def _load_training_examples(category=None, count=5):
         return examples[:count] if count else examples
     except Exception:
         return []
+
+
+def get_prep_template(test_name: str) -> str:
+    """Return short prep snippet for common tests."""
+    templates = {
+        "Core Water Analysis": "Collect 500 ml in clean plastic bottle, keep cool, deliver within 24 hrs.",
+        "E. coli": "Sterile container, don't rinse, deliver within 6 hrs.",
+        "Nitrate": "Collect 250 ml, acidify with 2 drops HNO3, keep chilled.",
+        "Turbidity": "Collect 250 ml in clean bottle, no headspace, deliver ambient.",
+        "SANS 241 Full Analysis Bundle": "Collect 1 L in sterile bottle, keep cool, deliver within 24 hrs.",
+    }
+    return templates.get(test_name, "Standard prep: Collect sample as per test guidelines.")
 
 
 def _format_examples_as_chat(examples, fmt="qa"):
@@ -169,10 +186,14 @@ Shall I generate your PDF quote now?
 """.strip()
 
 # Load sample Q&A examples for each intent type
-QUOTE_EXAMPLES = _format_examples_as_chat(_load_training_examples("Test Quotes", 5))
-LOGISTICS_EXAMPLES = _format_examples_as_chat(_load_training_examples("Sample Prep & Logistics", 3))
-CONSULTANT_EXAMPLES = _format_examples_as_chat(_load_training_examples("Consultant Escalation", 2))
-GENERAL_EXAMPLES = _format_examples_as_chat(_load_training_examples("General Catch-All", 5))
+QUOTE_EXAMPLES = _format_examples_as_chat(
+    _load_training_examples("Test Quotes", 5))
+LOGISTICS_EXAMPLES = _format_examples_as_chat(
+    _load_training_examples("Sample Prep & Logistics", 3))
+CONSULTANT_EXAMPLES = _format_examples_as_chat(
+    _load_training_examples("Consultant Escalation", 2))
+GENERAL_EXAMPLES = _format_examples_as_chat(
+    _load_training_examples("General Catch-All", 5))
 
 
 # Canned answer templates for broad questions
@@ -422,3 +443,12 @@ Intent: escalation
 Collect: name, phone, preferred time
 Example: "I'll arrange a call tomorrow at 2pm."
 """.strip()
+
+
+def build_prompts(system_template: str, user_template: str, examples: str = "") -> Tuple[List[Any], str]:
+    """Single entry-point builder for system messages and user message."""
+    system_msgs = [SystemMessage(content=system_template)]
+    if examples:
+        system_msgs.append(SystemMessage(content=f"Examples:\n{examples}"))
+    user_msg = user_template
+    return system_msgs, user_msg

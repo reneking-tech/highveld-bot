@@ -176,6 +176,28 @@ def _contains_price(text: str) -> bool:
     return bool(re.search(r"\bR?\s?\d[\d,]*(\.\d{2})?\b", text or ""))
 
 
+def build_numbered_options(options: List[SelectedTest]) -> str:
+    """Build a numbered list of options, including '0) Something else'."""
+    lines = ["Please select an option by number:"]
+    for i, opt in enumerate(options, start=1):
+        lines.append(f"{i}. {opt.name}")
+    lines.append("0. Something else")
+    return "\n".join(lines)
+
+
+def handle_clarification(user_text: str, options: List[SelectedTest], retriever) -> Tuple[str, bool]:
+    """Handle out-of-range selections: re-rank via embeddings or escalate if low confidence."""
+    nums = re.findall(r"\b\d+\b", user_text)
+    if not nums or any(int(n) > len(options) for n in nums):
+        # Re-rank query via embeddings for better options
+        docs = retriever.invoke(user_text)
+        new_options = _coerce_tests(docs)[:5]
+        if len(new_options) < 3:  # Low confidence
+            return "I'm not confident about that. Would you like to speak with a consultant?", True
+        return build_numbered_options(new_options), False
+    return "", False
+
+
 def _summarize_selection(tests: list[SelectedTest], *, show_price: bool, show_tat: bool) -> str:
     lines: list[str] = ["Here is your current selection:"]
     total = 0.0
