@@ -1,0 +1,190 @@
+Perfect — quoting is one of the highest-leverage functions of your chatbot, since it turns an inquiry into a potential sale. To do this well, the process should feel clear, reliable, and professional, while still being fast and automated. Here are the guiding principles you can use for the quote generation process:
+
+⸻
+
+💡 Guiding Principles for Quote Generation via Chatbot
+
+1. Clarity & Transparency
+	•	Quotes should be itemized: show test name, description (brief), price, turnaround time.
+	•	No hidden costs: if there are conditions (e.g., bulk discounts, minimum sample volume, extra courier fees), these must be shown clearly.
+	•	Always indicate currency (ZAR) and validity period (e.g., “valid for 14 days”).
+
+⸻
+
+2. Consistency with Lab Pricing
+	•	Pull directly from the authoritative price list (central database or CSV) — no hard-coded or free-typed values.
+	•	Ensure all quotes reflect the latest approved pricing and SANS 241 standards where applicable.
+	•	If a test is not priced or not in the database, chatbot should flag and escalate (“I’ll have Joe confirm this quote for you”).
+
+⸻
+
+3. Context Awareness
+	•	Use the conversation context: if the client already specified test type (e.g., “E. coli count” or “full drinking water compliance”), don’t re-ask unnecessarily.
+	•	Ask clarifying questions only when needed (sample size, delivery method, number of tests).
+
+⸻
+
+4. Professional Presentation
+	•	Quotes should be clean, branded, and easy to share (via PDF, email, or WhatsApp).
+	•	Provide both a quick response quote (text inline in chat) and the option for a formal document.
+	•	Use lab branding (logo, colors, disclaimer footer) to reinforce trust.
+
+⸻
+
+5. Speed & Efficiency
+	•	Initial ballpark quote should be generated instantly.
+	•	For more complex quotes (multiple tests, discounts, unusual samples), generate a pre-quote and escalate to human for confirmation — but always respond immediately.
+
+⸻
+
+6. Next-Step Orientation
+	•	Every quote should end with a clear next step:
+	•	“Would you like me to email this formal quote to you?”
+	•	“Would you like to book a sample collection?”
+	•	“Should I schedule a call with one of our team members to confirm bulk pricing?”
+
+⸻
+
+7. Auditability & Record Keeping
+	•	All chatbot-generated quotes should be logged (date, time, client name, items quoted).
+	•	Quotes should have a unique reference number for easy follow-up and consistency.
+	•	Escalated quotes should show chatbot’s draft vs. human-confirmed version for traceability.
+
+⸻
+
+8. Compliance & Disclaimers
+	•	Always include standard disclaimer text (e.g., “Prices exclude VAT unless otherwise stated. Turnaround time subject to laboratory workload. Quote valid for 14 days.”).
+	•	If tests fall under regulatory standards (e.g., SANS 241), the quote should reference the relevant section.
+
+⸻
+
+Highveld Biotech — Quote Generation & Interaction
+
+- Progressive disclosure:
+  Default with one best option (price + TAT). Offer to see alternatives; only list many items on request.
+
+- Workflow:
+  1) Confirm test(s)/package
+  2) Inline quote: item(s), R price, TAT, “Valid 14 days”
+  3) Offer formal PDF/email; “Yes please” → directly collect client details and generate PDF. Do not restart discovery.
+
+- Integrity:
+  Use only catalog items/prices. No invented totals. Currency: ZAR (Rxx.xx). Sum totals correctly.
+
+- References & logging:
+  Each quote gets ref code (e.g., QB-YYYY-####), is logged, and can be recalled in-chat.
+
+- Sticky context:
+  Keep the selected test/package consistent across follow-ups (logistics, TAT, address) unless the user switches.
+
+- Logistics in quotes:
+  Where relevant, include brief sample needs if available (min/preferred volume, container/preservative).
+
+- Ambiguity:
+  Ask one clarifying question or present 3–5 concrete options; do not guess.
+
+- PDF requirements:
+  Company header, client details, itemised lines, totals, validity (14 days), standard disclaimers.
+
+⸻
+
+Highveld Biotech — Quote Generation Principles (Dev Checklist)
+
+1) Accuracy & Trust
+- Only quote items present in the catalog (data/compiled). Never invent prices.
+- Validate each test selection (by id or exact name). If ambiguous, return options and ask the user to confirm.
+
+2) Context & Memory
+- Use the same session for follow-ups. “Option 2” and “Yes please” must resolve using recent context.
+- Summarize long threads; don’t let memory override catalog facts.
+
+3) Professional Tone & Empathy
+- Short, clear prose: list items and TAT; no IDs in prose; no JSON in chat.
+- End with a next step: “Would you like a formal PDF quote?”
+
+4) Structured, Action-Oriented
+- /quote/plan returns JSON: {tests[], total_price_ZAR, next_step, clarification_required?, options[]}
+- When tests are confirmed, set next_step=collect_client_details.
+- Require client fields: name, company, email, phone. Others optional.
+
+5) Guardrails & Transparency
+- If the request is ambiguous or unpriced, ask to clarify rather than guessing.
+- PDF must show: ref, validity (14 days), itemised lines, totals, and disclaimers.
+
+6) Efficiency & Multi-Channel
+- Keep retrieval K small for speed; use streaming endpoints for UX.
+- Keep the PDF generator robust with minimal inputs; fail fast with clear errors.
+
+7) Evaluation & Logging
+- Log quotes minimally (ref, client, items, total) to .data/quotes.log.csv.
+- Periodically sample quotes to verify adherence and client satisfaction.
+
+Minimal acceptance criteria for each release:
+- Given a clear test, /quote/plan returns next_step=collect_client_details and correct total.
+- Given an ambiguous test, /quote/plan returns clarification options (3–5).
+- Given valid client + tests, /quote/pdf returns a downloadable PDF with ref, validity, itemisation, and disclaimers.
+
+⸻
+
+Quoting Appendix
+
+- Confirm scope before quoting (e.g., water vs soil; specific test/panel).
+- Only include items present in context with valid ZAR prices.
+- Item format: {name}, price_ZAR (number), turnaround_days (number).
+- Ambiguous requests: ask to clarify or present 3–5 options to choose from.
+- Draft quote: itemised lines + total; validity 14 days; TAT subject to capacity.
+- PDF quotes: collect First name → Surname → Company → Email before generating.
+
+⸻
+
+🔑 Quote Generation Principles
+
+• Show test names clearly with prices (ZAR) and turnaround times
+• Format prices consistently as R1,234.56 in text responses
+• Use catalog prices only - never invent or estimate prices
+• When quoting multiple tests, present as an itemized list with a clear total
+• Quotes are valid for 14 days (always include this)
+• For ambiguous test requests, present options and ask for clarification
+• Collect all required client details before generating PDF quotes
+• Make the quote process conversational, not transactional
+• Handle interruptions gracefully - allow returning to quote process
+• For multi-test quotes, confirm all selected tests before finalizing
+
+PDF Quote Process (Sequential):
+1. First confirm the exact test(s) being quoted
+2. Collect client information conversationally:
+   - First name & surname
+   - Company name
+   - Email address
+   - Optional: VAT number, PO number, notes
+3. Review all information before generating
+4. Provide the downloadable PDF link with reference number
+
+Conversation Flow Examples:
+
+User: Can I get a quote for E. coli testing?
+Bot: Of course — I'll prepare a quote for E. coli (faecal coliform) testing. Could I have your name to begin?
+
+User: I need pricing for total dissolved solids.
+Bot: No problem. Let's set up a quote for TDS (Total Dissolved Solids). May I start with your name and surname?
+
+User: René King, Highveld Biotech, 2015/123456/07, rene@highveld.co.za
+Bot: Perfect, thank you René. Do you want me to include a VAT number or PO number on this quote, or should I proceed without them?
+
+User: Please add my VAT number 456789123
+Bot: Noted — I'll include VAT no 456789123 on your quote. Here's a summary:
+
+• Tests: Total Dissolved Solids — R303.00, TAT 1 day
+• Client: René King, Highveld Biotech
+• Email: rene@highveld.co.za
+• VAT no: 456789123
+
+Shall I generate your PDF quote now?
+⸻
+
+✅ In short:
+The quoting process should feel like a seamless extension of lab professionalism — fast, transparent, and accurate, but also careful to escalate when precision or complexity demands human confirmation.
+
+⸻
+
+Would you like me to draft a sample quote flow (the exact sequence of chatbot questions/answers from “I want a quote” → to final PDF/email)? That way you’ll see how these principles come alive in a real interaction.

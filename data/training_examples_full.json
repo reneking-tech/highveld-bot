@@ -1,0 +1,1153 @@
+{
+    "metadata": {
+        "description": "Complete training examples for Highveld Biotech chatbot",
+        "version": "1.1",
+        "created": "2023-08-15",
+        "examples_count": 200
+    },
+    "categories": [
+        {
+            "name": "Greetings & Small Talk",
+            "examples": [
+                {
+                    "intent": "greeting",
+                    "question": "Good day",
+                    "answer": "Good day, thank you for reaching out. Are you enquiring about water or soil testing today?"
+                },
+                {
+                    "intent": "greeting",
+                    "question": "Hi, how are you?",
+                    "answer": "I'm here and ready to help. Would you like a test quote, sample drop-off details, or to speak with a consultant?"
+                },
+                {
+                    "intent": "info",
+                    "question": "What do you do?",
+                    "answer": "I help clients with water and soil testing services — from pricing and turnaround to sample logistics and quotes."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Can you tell me a joke?",
+                    "answer": "Sure 😊 Why did the water sample go to therapy? It had too many issues with clarity. Meanwhile, shall I share sulphate pricing with you?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Are you a robot?",
+                    "answer": "I'm a digital assistant trained to help with lab testing queries. Would you like me to prepare a quote?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "I'm bored",
+                    "answer": "Let's fix that! Want to see how much a Full Water Analysis costs? (Hint: it's R9200.)"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Do you like coffee?",
+                    "answer": "I don't drink coffee, but I do know how much Caffeine in water costs to test 😉 Want that info?"
+                },
+                {
+                    "intent": "info",
+                    "question": "Who owns this lab?",
+                    "answer": "You're chatting with Highveld Biotech. I can assist with tests, quotes, or connect you with a consultant."
+                },
+                {
+                    "intent": "greeting",
+                    "question": "Hello?",
+                    "answer": "Hello! Would you like a quote, drop-off details, or sample prep instructions?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "How's the weather?",
+                    "answer": "I can't track weather yet, but I can tell you sample transport is best done chilled at ≤4 °C. Would you like prep steps?"
+                }
+            ]
+        },
+        {
+            "name": "Test Quotes",
+            "examples": [
+                {
+                    "intent": "quote",
+                    "question": "How much is sulphate testing?",
+                    "answer": "Sulphate as SO4 costs R100, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Quote for Ammonia please",
+                    "answer": "Ammonia as N costs R248, results in 1 day. May I start your quote?"
+                },
+                {
+                    "intent": "quote",
+                    "question": "Price for Nitrate?",
+                    "answer": "Nitrate is R441, turnaround 2 days."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Can you test Fluoride?",
+                    "answer": "Yes. Fluoride as F costs R477, results in 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "E. coli test price?",
+                    "answer": "E. coli / faecal coliforms cost R105, results in 2 days."
+                },
+                {
+                    "intent": "quote",
+                    "question": "What's the price for Total Dissolved Solids?",
+                    "answer": "TDS is R303, results in 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "How much for pH testing?",
+                    "answer": "pH at 25 °C is R95, results in 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Do you test for Cryptosporidium?",
+                    "answer": "Yes, Cryptosporidium species testing costs R650, turnaround 4 days."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Giardia?",
+                    "answer": "Giardia species testing is R650, results in 4 days."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Chloride test cost?",
+                    "answer": "Chloride as Cl is R366, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "How much for Sodium?",
+                    "answer": "Sodium as Na costs R100, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Cyanide?",
+                    "answer": "Cyanide (recoverable) costs R848, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Lead testing?",
+                    "answer": "Lead as Pb costs R100, results in 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Iron test price?",
+                    "answer": "Iron as Fe is R100, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Mercury?",
+                    "answer": "Mercury as Hg costs R100, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Copper?",
+                    "answer": "Copper as Cu costs R100, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Cadmium?",
+                    "answer": "Cadmium as Cd is R100, results in 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Antimony?",
+                    "answer": "Antimony as Sb costs R100, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Zinc?",
+                    "answer": "Zinc as Zn costs R100, turnaround 1 day."
+                },
+                {
+                    "intent": "quote",
+                    "question": "Manganese?",
+                    "answer": "Manganese as Mn costs R100, turnaround 1 day."
+                }
+            ]
+        },
+        {
+            "name": "Turnaround / Timing",
+            "examples": [
+                {
+                    "intent": "turnaround",
+                    "question": "How long do E. coli results take?",
+                    "answer": "E. coli results take 2 days."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "What's the turnaround for sulphate?",
+                    "answer": "Sulphate test results are available in 1 day."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "Ammonia?",
+                    "answer": "Ammonia test results take 1 day."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "Nitrate?",
+                    "answer": "Nitrate test results are ready in 2 days."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "Cryptosporidium?",
+                    "answer": "Cryptosporidium testing takes 4 days."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "Full Water Analysis (SANS 241)?",
+                    "answer": "Full Water Analysis (SANS 241) takes 7 days."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "Core Water Analysis?",
+                    "answer": "Core Water Analysis results are available in 5 days."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "Compost Analysis?",
+                    "answer": "Compost Analysis takes 10 days."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "UV Disinfection Analysis?",
+                    "answer": "UV Disinfection Analysis takes 10–12 days."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "Soil Microbes?",
+                    "answer": "Soil Microbes test results are ready in 7 days."
+                },
+                {
+                    "intent": "rush",
+                    "question": "Can I get results faster?",
+                    "answer": "Sometimes, yes. It depends on the test. Which test are you interested in?"
+                },
+                {
+                    "intent": "rush",
+                    "question": "I need same-day results",
+                    "answer": "Some tests finish within a day (like pH, sulphate). Others need more time. Which test do you need urgently?"
+                },
+                {
+                    "intent": "rush",
+                    "question": "Can you do overnight testing?",
+                    "answer": "Certain quick tests can be rushed. May I confirm which one you need?"
+                },
+                {
+                    "intent": "rush",
+                    "question": "What if I need it tomorrow?",
+                    "answer": "Many tests like sulphate and chloride can be ready tomorrow. Shall I check pricing for you?"
+                },
+                {
+                    "intent": "rush",
+                    "question": "I need urgent borehole water testing",
+                    "answer": "For urgent borehole water, I'd suggest Core Water Analysis. It's 5 days by default but can sometimes be prioritised. Would you like me to escalate this to a consultant?"
+                },
+                {
+                    "intent": "rush",
+                    "question": "Can you guarantee faster turnaround?",
+                    "answer": "Standard times are fixed, but for bulk or urgent cases we can escalate. Want me to schedule a callback?"
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "I need it by Friday",
+                    "answer": "Could you tell me which test? I'll confirm if it fits your timeline."
+                },
+                {
+                    "intent": "turnaround",
+                    "question": "What's your fastest test?",
+                    "answer": "pH and conductivity — ready within a day. Would you like me to quote one?"
+                },
+                {
+                    "intent": "rush",
+                    "question": "Can I pay more for faster service?",
+                    "answer": "In some cases, yes. Would you like me to connect you with a consultant about rush options?"
+                },
+                {
+                    "intent": "rush",
+                    "question": "Can you do 24-hour turnaround for E. coli?",
+                    "answer": "E. coli normally takes 2 days. I can escalate to see if 24h is possible. Want me to arrange a callback?"
+                }
+            ]
+        },
+        {
+            "name": "Sample Prep & Logistics",
+            "examples": [
+                {
+                    "intent": "sample_prep",
+                    "question": "How do I collect a Fluoride sample?",
+                    "answer": "Collect 250 mL in a sterile amber bottle, leave 2 cm headspace, chill ≤4 °C, deliver within 6 h."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Nitrate sample prep?",
+                    "answer": "For Nitrate testing, collect 250 mL, acidify with 2 drops 2 M HNO₃, keep chilled."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Compost Analysis sample prep?",
+                    "answer": "For Compost Analysis, grab 1 kg composite (min 10 spots) in double zip bag, air-dry 2 h under shade, ship ambient."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Soil Structure sample?",
+                    "answer": "For Soil Structure testing, collect 1 kg intact core in PVC sleeve, seal ends with parafilm, keep upright."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Water Infiltration sample?",
+                    "answer": "For Water Infiltration testing, collect 250 mL water sample in clean plastic bottle, chilled ≤10 °C."
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Drop-off location?",
+                    "answer": "📍 Modderfontein Industrial Complex, Standerton Ave (via Nobel Gate), Permit Office corner Nobel & Standerton."
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Opening hours?",
+                    "answer": "Our drop-off office is open Monday–Friday, 8am–4pm."
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Can I deliver on weekends?",
+                    "answer": "No, our drop-off is only open on weekdays. Courier collection can be arranged if needed."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "How much sample do I need?",
+                    "answer": "Typically 250 mL for water, 500 g for soil — I can confirm the exact amount based on the specific test requested."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Should I chill the sample?",
+                    "answer": "Yes, most water samples must be kept ≤4–10 °C for accurate results."
+                },
+                {
+                    "intent": "logistics",
+                    "question": "What's the slowest test?",
+                    "answer": "Compost and UV Analysis — up to 12 days. Do you need alternatives?"
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Can you test after hours?",
+                    "answer": "We only accept drop-offs 8–4pm weekdays. Want me to arrange courier pickup?"
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Can I collect results on the weekend?",
+                    "answer": "Reports are emailed on weekdays. Want me to schedule your report for Monday morning?"
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "If I'm late, do you still test?",
+                    "answer": "We can still test, but delays affect accuracy. Want me to share prep steps so your sample stays valid?"
+                },
+                {
+                    "intent": "logistics",
+                    "question": "How soon can I book?",
+                    "answer": "Anytime — quotes are instant. Want me to set one up now?"
+                }
+            ]
+        },
+        {
+            "name": "Panels / Bundles",
+            "examples": [
+                {
+                    "intent": "panel",
+                    "question": "Do you offer full water analysis?",
+                    "answer": "Yes — Full Water Analysis (SANS 241), R9200, turnaround 7 days."
+                },
+                {
+                    "intent": "panel",
+                    "question": "What's in Core Water Analysis?",
+                    "answer": "Core Water Analysis (R1700, 5 days) includes pH, EC, turbidity, and metals."
+                },
+                {
+                    "intent": "panel",
+                    "question": "Do you do SANS 241 full bundle?",
+                    "answer": "Yes, SANS 241 Full Bundle costs R9600, turnaround 6 days."
+                },
+                {
+                    "intent": "panel",
+                    "question": "Compost Analysis price?",
+                    "answer": "Compost Analysis (SANS 1639) is R2555, turnaround 10 days."
+                },
+                {
+                    "intent": "panel",
+                    "question": "UV Water Disinfection?",
+                    "answer": "Yes, UV Disinfection Analysis is R2800, turnaround 10–12 days."
+                },
+                {
+                    "intent": "panel",
+                    "question": "SANS 1639 multi-element test?",
+                    "answer": "Yes, SANS 1639 ICP bundle, R1240, turnaround 5 days, includes 18 elements."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Which test is best for household borehole water?",
+                    "answer": "Most clients choose Core Water Analysis or the SANS 241 Core Panel for comprehensive borehole water testing."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "What's the cheapest panel?",
+                    "answer": "Colour Aesthetic at R91, turnaround 1 day, is our most affordable test."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "What's the most expensive?",
+                    "answer": "Full Water Analysis (SANS 241) at R9200 is our most comprehensive panel."
+                },
+                {
+                    "intent": "info",
+                    "question": "Do you test soil as well as water?",
+                    "answer": "Yes, we offer Soil Microbes (R350, 7 days) and Soil Structure (R300, 6 days)."
+                }
+            ]
+        },
+        {
+            "name": "Consultant Escalation",
+            "examples": [
+                {
+                    "intent": "escalation",
+                    "question": "Can I speak to a human?",
+                    "answer": "Of course. Please share your phone number and best time tomorrow for a callback."
+                },
+                {
+                    "intent": "escalation",
+                    "question": "I want detailed advice on borehole water.",
+                    "answer": "I'll connect you with a consultant who specializes in borehole water. Could you share your contact number?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "I need urgent help.",
+                    "answer": "I'll escalate this. Please confirm your phone number, and we'll prioritise a callback."
+                },
+                {
+                    "intent": "escalation",
+                    "question": "Can I get a call today?",
+                    "answer": "Callbacks are normally scheduled for the next business day. I can arrange for you to be contacted first thing tomorrow."
+                },
+                {
+                    "intent": "escalation",
+                    "question": "Please send a consultant",
+                    "answer": "I'd be happy to arrange that. May I confirm your phone number for the callback?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "I'm still confused",
+                    "answer": "No problem — I can arrange a consultant to call you. Can I take your number?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "I don't know what test to do",
+                    "answer": "Many clients start with Core Water Analysis. Want me to set up a quote?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "Who can I speak to?",
+                    "answer": "A consultant will gladly assist. Could you confirm your number?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "I'm not sure",
+                    "answer": "That's okay. Would you like me to send a PDF catalogue so you can browse?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "I need advice",
+                    "answer": "Absolutely. Do you want me to arrange a callback?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "Can someone come collect my sample?",
+                    "answer": "Yes, via courier. Want me to schedule with a consultant?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "Can I get results interpreted?",
+                    "answer": "Yes, consultants can advise. Want me to connect you?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "What if I don't understand the report?",
+                    "answer": "A consultant can explain it. Would you like me to set a call?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "Can I meet in person?",
+                    "answer": "Yes — at our Modderfontein office. Shall I book a consultant?"
+                },
+                {
+                    "intent": "escalation",
+                    "question": "Can I call you?",
+                    "answer": "Calls are via consultants. Could I take your number so they can reach you?"
+                }
+            ]
+        },
+        {
+            "name": "Weird / Off-Kilter",
+            "examples": [
+                {
+                    "intent": "off_topic",
+                    "question": "Do you test alien microbes?",
+                    "answer": "Not extraterrestrial ones 😊 but we do test for E. coli and Cryptosporidium."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Can you test blood?",
+                    "answer": "No, we only test water, soil, and related environmental samples."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Can I drink my swimming pool water?",
+                    "answer": "Best to test chlorine, pH, and E. coli before considering that. Would you like a quote for pool water testing?"
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Is my tap water safe?",
+                    "answer": "That depends on several factors. We recommend Core Water Analysis for peace of mind regarding your tap water quality."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Do you test coffee?",
+                    "answer": "Not directly, but we can test the water quality you brew it with."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Can you test wine?",
+                    "answer": "We don't do alcohols, only water and soil testing."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "What if I bring river water with fish?",
+                    "answer": "Please filter the fish out 😉 but yes, river water can be tested for various parameters."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Can I bring only half a bottle?",
+                    "answer": "For accuracy, we need the full 250 mL sample amount."
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Will my sample explode if not chilled?",
+                    "answer": "It won't explode 😊 but results may be unreliable if not properly chilled to ≤4 °C."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Do you work for the government?",
+                    "answer": "We're an independent accredited laboratory."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Can you test magic potions?",
+                    "answer": "I can't promise on potions, but I can test for metals and microbes in liquid samples."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Is water wet?",
+                    "answer": "Always a fun debate! Scientifically, water molecules adhere to surfaces, making them feel wet. Shall I fetch sulphate pricing for you?"
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Can I drink distilled water only?",
+                    "answer": "Distilled water lacks minerals; better to confirm safety with a SANS 241 analysis."
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Can I submit samples by Uber?",
+                    "answer": "Yes, as long as they're correctly prepared and sealed according to our guidelines."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Do you test for love in water?",
+                    "answer": "Only H2O and contaminants 😉 Would you like a test for nitrates instead?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Do you test Coca-Cola?",
+                    "answer": "Not directly, but we can test the water used in it."
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Can you test beer?",
+                    "answer": "Only the water used in brewing. Want me to quote?"
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Do you test pets' water bowls?",
+                    "answer": "Yes, as water samples. Want a quote?"
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Can I use a soda bottle for the sample?",
+                    "answer": "Better to use sterile bottles — want me to send prep steps?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Do you test for love potions?",
+                    "answer": "Only in fairy tales 😊 We test water and soil. Want me to quote nitrates instead?"
+                }
+            ]
+        },
+        {
+            "name": "General Catch-All",
+            "examples": [
+                {
+                    "intent": "recommendation",
+                    "question": "Which test should I choose?",
+                    "answer": "That depends on your concern. For general safety, we suggest Core Water Analysis."
+                },
+                {
+                    "intent": "info",
+                    "question": "Do you accept soil samples?",
+                    "answer": "Yes — we offer Soil Microbes and Soil Structure testing."
+                },
+                {
+                    "intent": "info",
+                    "question": "How do I pay?",
+                    "answer": "We accept EFT payments. Payment details are included in your PDF quote."
+                },
+                {
+                    "intent": "info",
+                    "question": "Do you give certificates?",
+                    "answer": "Yes, official test reports are emailed as PDFs once testing is complete."
+                },
+                {
+                    "intent": "info",
+                    "question": "Can you email me?",
+                    "answer": "I only generate PDFs here. Please provide your email in the quote form when requesting a formal quote."
+                },
+                {
+                    "intent": "info",
+                    "question": "What's your fastest test?",
+                    "answer": "Many chemical tests are ready in just 1 day, including pH and TDS."
+                },
+                {
+                    "intent": "info",
+                    "question": "What's your slowest test?",
+                    "answer": "Compost and UV Analysis take the longest — up to 12 days."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Can you test borehole water for resale compliance?",
+                    "answer": "Yes — Full Water Analysis (SANS 241) covers all parameters required for water resale compliance."
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Do you provide courier collection?",
+                    "answer": "Yes, courier collection is available on request via a consultant."
+                },
+                {
+                    "intent": "info",
+                    "question": "Do you test for pesticides?",
+                    "answer": "Not in our standard catalogue. Please speak with a consultant for specialized pesticide testing."
+                },
+                {
+                    "intent": "info",
+                    "question": "What about microplastics?",
+                    "answer": "Microplastics testing isn't included in our standard panels, but we do test for metals and microbes."
+                },
+                {
+                    "intent": "logistics",
+                    "question": "Can you rush a test?",
+                    "answer": "Sometimes expedited testing is possible — I can escalate to a consultant for urgent requests."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Do you test sewage water?",
+                    "answer": "Yes, we test sewage water for microbes and heavy metals."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Do you do farm soil tests?",
+                    "answer": "Yes, we offer soil microbes and nutrient-related SANS 1639 bundles for farm soil analysis."
+                },
+                {
+                    "intent": "info",
+                    "question": "Can I order multiple tests?",
+                    "answer": "Yes, you can request a panel or add multiple individual tests to one quote."
+                },
+                {
+                    "intent": "info",
+                    "question": "Do you do discounts?",
+                    "answer": "Please speak with a consultant for bulk pricing and discount options."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Is bottled water safer?",
+                    "answer": "Not always — we can test bottled water for standards compliance to confirm its safety."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Do you test swimming pools?",
+                    "answer": "Yes, chlorine, pH, and microbial tests are recommended for swimming pool water."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Can I test rainwater tanks?",
+                    "answer": "Yes — Core Water Analysis is commonly used for rainwater tank testing."
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Do you test dam water?",
+                    "answer": "Yes, dam water can be tested for microbes, nitrates, and sulphates."
+                }
+            ]
+        },
+        {
+            "name": "Generic & Catalogue Requests",
+            "examples": [
+                {
+                    "intent": "catalogue",
+                    "question": "test",
+                    "answer": "Could you clarify which test you're interested in — water, soil, or a full panel? If you'd like, I can also prepare a PDF of our full test catalogue with all pricing."
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "how much for a test?",
+                    "answer": "Our tests range from R95 for pH to R9200 for a full water analysis. Would you like me to send you the complete catalogue in PDF?"
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "I want all your test prices",
+                    "answer": "No problem. To generate the full catalogue in PDF, I'll need your name, contact number, email, and company number. May I start with your name?"
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "Send me everything you test",
+                    "answer": "Happy to. Please provide your details (name, phone, email, company number) and I'll send the full test list with pricing."
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "Just give me all the tests",
+                    "answer": "Sure — we offer over 200 water and soil tests. To share the PDF, I'll need your contact details. Can I take your email address?"
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "I want a full price list",
+                    "answer": "Absolutely. The full list is available as a PDF. Could I get your name and company number to attach it properly?"
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "I need everything you do",
+                    "answer": "We cover chemical, microbiological, and physical tests. Would you like me to prepare a PDF catalogue with all prices and turnaround times?"
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "Catalogue",
+                    "answer": "Got it — our full catalogue is best shared by PDF. Could I take your email so we can send it?"
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "Give me a PDF of all your tests",
+                    "answer": "Certainly. I'll just need your name, phone, email, and company number so we can register the request. Shall we start with your name?"
+                },
+                {
+                    "intent": "catalogue",
+                    "question": "Can I have a price book?",
+                    "answer": "Yes. Please share your details and I'll send our complete price list as a PDF."
+                }
+            ]
+        },
+        {
+            "name": "Discounts & Competitor Questions",
+            "examples": [
+                {
+                    "intent": "pricing",
+                    "question": "Do you do discounts?",
+                    "answer": "For bulk or regular clients, yes. May I connect you with a consultant?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Cheaper if I send 100 samples?",
+                    "answer": "Definitely possible. Bulk discounts are available. Can I take your contact info so a consultant can confirm pricing?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Your competitor is cheaper",
+                    "answer": "We focus on accuracy and accredited methods. May I generate a quote so you can compare fairly?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Can you match competitor pricing?",
+                    "answer": "That can be reviewed by a consultant. May I take your details for them to call?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Do I get a discount if I pay upfront?",
+                    "answer": "That's handled case-by-case. Want me to connect you with a consultant?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Do you do loyalty discounts?",
+                    "answer": "Yes, repeat clients often qualify. Want me to send your details to our consultant team?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Can I get cheaper if I skip some parameters?",
+                    "answer": "Yes — you can request single tests instead of full panels. Want me to prepare a quote for one test?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Are you the cheapest?",
+                    "answer": "Not always, but we're accredited and reliable. Would you like a full price PDF to compare?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Why so expensive?",
+                    "answer": "Accredited labs use precise equipment. May I show you a breakdown of turnaround and pricing?"
+                },
+                {
+                    "intent": "pricing",
+                    "question": "Do you charge VAT?",
+                    "answer": "Yes, VAT applies. Want me to include VAT in your quote?"
+                }
+            ]
+        },
+        {
+            "name": "Confused / Unclear Input",
+            "examples": [
+                {
+                    "intent": "unclear",
+                    "question": "1111",
+                    "answer": "I didn't quite catch that. Are you asking about a test, price, or logistics?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "??",
+                    "answer": "Could you clarify what you'd like? I can help with quotes, prices, or drop-off details."
+                },
+                {
+                    "intent": "unclear",
+                    "question": "Help",
+                    "answer": "Sure! Would you like a quote, sample drop-off info, or to speak to a consultant?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "…",
+                    "answer": "Just checking in — would you like pricing, drop-off info, or a call-back?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "random letters (abcxyz)",
+                    "answer": "I didn't quite understand that. Do you want me to prepare a quote for a test?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "Why?",
+                    "answer": "Could you tell me a bit more about what you're asking? Are you enquiring about a specific test?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "What do you mean?",
+                    "answer": "I'm here to help with tests, prices, turnaround, or consultant bookings. Which one do you need?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "Send",
+                    "answer": "Could you clarify — send what? A quote PDF or full catalogue?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "now",
+                    "answer": "Right away! Which test or service would you like me to quote?"
+                },
+                {
+                    "intent": "unclear",
+                    "question": "Test test test",
+                    "answer": "I can help — which test specifically? Water, soil, or full panel?"
+                }
+            ]
+        },
+        {
+            "name": "Technical / What's in a Test",
+            "examples": [
+                {
+                    "intent": "technical",
+                    "question": "What's involved in a sulphate test?",
+                    "answer": "It's usually done with a gravimetric method, but if you'd like more technical detail I can have a consultant call you back."
+                },
+                {
+                    "intent": "technical",
+                    "question": "How do you test for nitrates?",
+                    "answer": "Typically via spectrophotometry. Would you like me to prepare a quote?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "How do you measure pH?",
+                    "answer": "Using calibrated pH meters at 25 °C. Want me to include it in a panel quote?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "What does E. coli testing involve?",
+                    "answer": "It's cultured in lab media to detect bacterial colonies. Would you like me to confirm turnaround?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "How do you test for heavy metals?",
+                    "answer": "Usually ICP or AAS methods. Want me to show which bundle includes them?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "How is fluoride tested?",
+                    "answer": "Methods vary: distillation or electrode analysis. Shall I prepare a quote for the one under SANS 241?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "What is Core Water Analysis exactly?",
+                    "answer": "It includes pH, EC, turbidity, and metals. Do you want a quote?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "Is UV disinfection testing complicated?",
+                    "answer": "It involves influent vs effluent water and spectrophotometry. Want me to send prep steps?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "Do you test pesticides?",
+                    "answer": "Not in this catalogue. Would you like me to arrange a consultant callback?"
+                },
+                {
+                    "intent": "technical",
+                    "question": "What about microplastics?",
+                    "answer": "Not yet. Would you like me to log this request with a consultant?"
+                }
+            ]
+        },
+        {
+            "name": "Odd Requests",
+            "examples": [
+                {
+                    "intent": "off_topic",
+                    "question": "Can you taste my water?",
+                    "answer": "I don't taste, I test 😉 Want me to quote sulphates?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Can you make water pure?",
+                    "answer": "We test purity — treatment is external. Want me to connect you?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Do you test for ghosts?",
+                    "answer": "Only microbes 👻 Want me to send the catalogue?"
+                },
+                {
+                    "intent": "off_topic",
+                    "question": "Can you check if water is haunted?",
+                    "answer": "Not haunted, but possibly contaminated. Shall I quote E. coli?"
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Can I send spit?",
+                    "answer": "We don't test saliva, only water/soil. Want me to prepare a water test?"
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Can I send coffee?",
+                    "answer": "We'd test the water it's brewed with. Want me to quote?"
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Can I test holy water?",
+                    "answer": "Yes, as a water sample. Want me to quote?"
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Do you test ice?",
+                    "answer": "Yes — melt into water and submit. Shall I prepare a quote?"
+                },
+                {
+                    "intent": "recommendation",
+                    "question": "Can you test swimming pool water?",
+                    "answer": "Yes, chlorine, pH, and microbes are recommended. Want me to prepare a bundle?"
+                },
+                {
+                    "intent": "sample_prep",
+                    "question": "Can I use a soda bottle for the sample?",
+                    "answer": "Better to use sterile bottles — want me to send prep steps?"
+                }
+            ]
+        }
+    ],
+    "field_mappings": [
+        {
+            "intent": "quote",
+            "fields": [
+                "test_name",
+                "price_ZAR",
+                "turnaround_days"
+            ],
+            "description": "Price inquiries - respond with test name, price and turnaround time"
+        },
+        {
+            "intent": "turnaround",
+            "fields": [
+                "test_name",
+                "turnaround_days"
+            ],
+            "description": "Turnaround time inquiries - respond with test name and turnaround time"
+        },
+        {
+            "intent": "sample_prep",
+            "fields": [
+                "test_name",
+                "sample_prep"
+            ],
+            "description": "Sample preparation inquiries - respond with test name and preparation instructions"
+        },
+        {
+            "intent": "logistics",
+            "fields": [
+                "category",
+                "address",
+                "notes"
+            ],
+            "description": "Drop-off location and logistics inquiries - respond with address and logistics info"
+        },
+        {
+            "intent": "panel",
+            "fields": [
+                "category",
+                "notes",
+                "price_ZAR",
+                "turnaround_days"
+            ],
+            "description": "Panel/bundle inquiries - respond with bundle description, price and turnaround time"
+        },
+        {
+            "intent": "escalation",
+            "fields": [
+                "name",
+                "phone",
+                "time"
+            ],
+            "description": "Consultant requests - collect name, phone and preferred time"
+        },
+        {
+            "intent": "catalogue",
+            "fields": [
+                "name",
+                "email",
+                "company"
+            ],
+            "description": "Catalogue requests - collect customer details for PDF delivery"
+        },
+        {
+            "intent": "technical",
+            "fields": [
+                "test_name",
+                "notes",
+                "standard"
+            ],
+            "description": "Technical inquiries about test methods - use test info and standards"
+        },
+        {
+            "intent": "pricing",
+            "fields": [
+                "price_ZAR",
+                "notes"
+            ],
+            "description": "Pricing structure inquiries - explain pricing model and bulk options"
+        },
+        {
+            "intent": "unclear",
+            "fields": [],
+            "description": "Unclear inputs - respond with clarifying questions and options"
+        },
+        {
+            "intent": "rush",
+            "fields": [
+                "turnaround_days",
+                "notes"
+            ],
+            "description": "Rush/expedited requests - explain standard turnaround and escalation options"
+        },
+        {
+            "intent": "recommendation",
+            "fields": [
+                "category",
+                "test_name",
+                "notes"
+            ],
+            "description": "Test recommendation inquiries - suggest appropriate tests based on needs"
+        }
+    ],
+    "intent_examples": {
+        "quote": [
+            "price",
+            "quote",
+            "cost",
+            "how much",
+            "fee"
+        ],
+        "turnaround": [
+            "how long",
+            "when ready",
+            "turnaround",
+            "days"
+        ],
+        "sample_prep": [
+            "collect",
+            "sample",
+            "bottle",
+            "preparation"
+        ],
+        "logistics": [
+            "drop-off",
+            "address",
+            "hours",
+            "location"
+        ],
+        "panel": [
+            "bundle",
+            "full analysis",
+            "package",
+            "SANS 241"
+        ],
+        "escalation": [
+            "consultant",
+            "human",
+            "call me",
+            "speak to"
+        ],
+        "catalogue": [
+            "all tests",
+            "full list",
+            "catalogue",
+            "everything"
+        ],
+        "technical": [
+            "method",
+            "how do you test",
+            "what's involved",
+            "process"
+        ],
+        "pricing": [
+            "discount",
+            "cheaper",
+            "bulk",
+            "competitor"
+        ],
+        "unclear": [
+            "help",
+            "???",
+            "random text",
+            "unclear"
+        ],
+        "rush": [
+            "urgent",
+            "rush",
+            "faster",
+            "expedite"
+        ],
+        "recommendation": [
+            "which test",
+            "best for",
+            "recommend",
+            "suggest"
+        ]
+    }
+}

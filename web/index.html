@@ -3,310 +3,158 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Highveld Biotech Chatbot</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Highveld Biotech — Assistant</title>
     <link rel="stylesheet" href="/static/styles.css" />
+    <link rel="stylesheet" href="/static/quote.css" />
 </head>
 
 <body>
-    <header class="hv-header">
-        <div class="brand">
-            <img src="/assets/logo.png" alt="Highveld Biotech" class="logo-img" />
-            <h1>Highveld Biotech Assistant</h1>
-        </div>
-    </header>
-    <main class="container">
-        <div id="chat" class="chat"></div>
-        <form id="composer" class="composer">
-            <input id="message" type="text" placeholder="Type your message…" autocomplete="off" />
-            <button type="submit">Send</button>
-        </form>
-        <!-- Quote Modal -->
-        <div id="quoteModal" class="modal" hidden>
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h2>Create a Quote</h2>
-                    <button type="button" class="close" id="closeQuote">×</button>
+    <header class="app-header">
+        <div class="wrap">
+            <div class="brand">
+                <div class="title">
+                    <div class="name">Highveld Biotech</div>
+                    <div class="tag">Scientific Excellence</div>
                 </div>
-                <form id="quoteForm">
-                    <div class="grid">
-                        <label>Requested tests (required)
-                            <textarea id="q_tests" required
-                                placeholder="e.g., Full SANS 241 test; E. coli count"></textarea>
-                        </label>
-                        <label>Additional details
-                            <textarea id="q_context"
-                                placeholder="Anything else that helps, e.g., borehole water, sample type, preferred TAT"></textarea>
-                        </label>
-                        <label>Number of samples
-                            <input id="q_samples" type="number" min="1" placeholder="1" />
-                        </label>
-                        <label>Turnaround preference
-                            <select id="q_tat_pref">
-                                <option value="">No preference</option>
-                                <option>Fastest available</option>
-                                <option>Standard</option>
-                            </select>
-                        </label>
-                        <label>Full name (required)
-                            <input id="q_name" type="text" required />
-                        </label>
-                        <label>Email (required)
-                            <input id="q_email" type="email" required />
-                        </label>
-                        <label>Company
-                            <input id="q_company" type="text" />
-                        </label>
-                        <label>Phone
-                            <input id="q_phone" type="tel" />
-                        </label>
-                        <label>Reference / PO
-                            <input id="q_reference" type="text" />
-                        </label>
-                        <label>Billing address
-                            <input id="q_billing" type="text" />
-                        </label>
-                        <label>VAT number
-                            <input id="q_vat" type="text" />
-                        </label>
-                    </div>
-                    <div class="modal-actions">
-                        <button type="button" class="secondary" id="cancelQuote">Cancel</button>
-                        <button type="submit" class="primary">Download Quote (PDF)</button>
-                    </div>
-                </form>
             </div>
         </div>
+    </header>
+
+    <main class="shell">
+        <section class="card">
+            <div class="toolbar">
+                <div class="hint">Ask about tests, pricing, TAT, logistics, or request a PDF quote.</div>
+            </div>
+
+            <div id="chat" class="chat-window" aria-live="polite"></div>
+
+            <div class="input-bar">
+                <div class="input">
+                    <textarea id="input" placeholder="Type your message… (Shift+Enter for new line)"></textarea>
+                </div>
+                <button id="send" class="send" type="button">Send</button>
+            </div>
+        </section>
+
+        <!-- Footer note removed per request to keep UI minimal during quoting -->
     </main>
-    <footer class="hv-footer">
-        <small>© Highveld Biotech SA PTY Ltd.</small>
-    </footer>
 
     <script>
-        const chat = document.getElementById('chat');
-        const form = document.getElementById('composer');
-        const input = document.getElementById('message');
-        const quoteModal = document.getElementById('quoteModal');
-        const quoteForm = document.getElementById('quoteForm');
-        const closeQuote = document.getElementById('closeQuote');
-        const cancelQuote = document.getElementById('cancelQuote');
-        let sessionId = null;
-        let typingEl = null;
-        let lastUserMessage = '';
-        let quoteOffered = false;
-        let pendingTests = '';
+        const chatEl = document.getElementById('chat');
+        const inputEl = document.getElementById('input');
+        const sendBtn = document.getElementById('send');
+        // No floating PDF button; generation is chat-driven
+        let wasReadyForPdf = false;
 
-        function addMsg(role, text) {
-            const el = document.createElement('div');
-            el.className = `msg ${role}`;
-            el.textContent = text;
-            chat.appendChild(el);
-            chat.scrollTop = chat.scrollHeight;
-        }
+        function showPdfToast() {}
 
-        function showTyping() {
-            if (typingEl) return;
-            typingEl = document.createElement('div');
-            typingEl.className = 'msg bot typing';
-            typingEl.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-            chat.appendChild(typingEl);
-            chat.scrollTop = chat.scrollHeight;
-        }
-
-        function hideTyping() {
-            if (typingEl) { typingEl.remove(); typingEl = null; }
-        }
-
-        function addBotContainer() {
-            const el = document.createElement('div');
-            el.className = 'msg bot';
-            el.textContent = '';
-            chat.appendChild(el);
-            return el;
-        }
-
-        async function sendStreaming(text) {
-            // Try streaming endpoint first
-            const controller = new AbortController();
-            const res = await fetch('/stream', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: text, session_id: sessionId }),
-                signal: controller.signal
-            });
-            if (!res.ok || !res.body) throw new Error('no stream');
-            const reader = res.body.getReader();
-            const decoder = new TextDecoder();
-            const bot = addBotContainer();
-            hideTyping();
-            while (true) {
-                const { value, done } = await reader.read();
-                if (done) break;
-                bot.textContent += decoder.decode(value, { stream: true });
-                chat.scrollTop = chat.scrollHeight;
-            }
-            maybeOfferQuote(lastUserMessage);
-        }
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const text = input.value.trim();
-            if (!text) return;
-            addMsg('user', text);
-            lastUserMessage = text;
-            input.value = '';
+        async function generatePdf() {
+            addMessage('ai', 'Generating your PDF…');
             try {
-                showTyping();
-                try {
-                    await sendStreaming(text);
-                } catch (streamErr) {
-                    // Fallback to non-streaming
-                    const res = await fetch('/chat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ message: text, session_id: sessionId })
-                    });
-                    const data = await res.json();
-                    sessionId = data.session_id || sessionId;
-                    hideTyping();
-                    addMsg('bot', data.answer || '[no answer]');
-                    maybeOfferQuote(lastUserMessage);
-                }
-            } catch (err) {
-                hideTyping();
-                addMsg('bot', 'Sorry, there was a problem reaching the server.');
-            }
-        });
-
-        // Greet
-        addMsg('bot', 'Hi! How can I help with tests, pricing, turnaround times, or drop-off details today?');
-
-        // Quote modal controls
-        function openQuote() {
-            // Prefill tests with last user message if it looks like a quote request
-            const testsEl = document.getElementById('q_tests');
-            if (pendingTests) {
-                testsEl.value = pendingTests;
-            } else if (lastUserMessage && /quote|price|cost|test/i.test(lastUserMessage)) {
-                testsEl.value = testsEl.value || lastUserMessage;
-            }
-            quoteModal.hidden = false;
-        }
-        function closeQuoteModal() { quoteModal.hidden = true; }
-
-        closeQuote.addEventListener('click', closeQuoteModal);
-        cancelQuote.addEventListener('click', closeQuoteModal);
-
-        function addQuoteOffer(testsText) {
-            const wrapper = document.createElement('div');
-            wrapper.className = 'msg bot';
-            const p = document.createElement('div');
-            p.textContent = `Would you like a formal quote for: ${testsText}? You can add other tests you’re interested in, then confirm.`;
-            const actions = document.createElement('div');
-            actions.className = 'inline-actions';
-            const confirmBtn = document.createElement('button');
-            confirmBtn.type = 'button';
-            confirmBtn.className = 'inline-btn primary';
-            confirmBtn.textContent = 'Confirm & Continue';
-            const addMoreBtn = document.createElement('button');
-            addMoreBtn.type = 'button';
-            addMoreBtn.className = 'inline-btn';
-            addMoreBtn.textContent = 'Add More Tests';
-            actions.appendChild(confirmBtn);
-            actions.appendChild(addMoreBtn);
-            wrapper.appendChild(p);
-            wrapper.appendChild(actions);
-            chat.appendChild(wrapper);
-            chat.scrollTop = chat.scrollHeight;
-
-            confirmBtn.addEventListener('click', () => { openQuote(); });
-            addMoreBtn.addEventListener('click', () => {
-                addMsg('bot', 'Sure — tell me any other tests to include. When ready, type “confirm quote”.');
-            });
-        }
-
-        function maybeOfferQuote(userText) {
-            if (quoteOffered) return;
-            if (!userText) return;
-            // Simple heuristic: if message suggests pricing/tests, offer a quote
-            if (/quote|price|cost|test|sans|e\.?\s*coli|241/i.test(userText)) {
-                pendingTests = userText;
-                quoteOffered = true;
-                addQuoteOffer(pendingTests);
-            }
-        }
-
-        // If the user types “confirm quote”, open the form using the last/pending tests
-        input.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                const val = input.value.trim().toLowerCase();
-                if (val === 'confirm quote' || val === 'yes, quote' || val === 'yes quote') {
-                    e.preventDefault();
-                    pendingTests = pendingTests || lastUserMessage || '';
-                    openQuote();
-                }
-            }
-        });
-
-        quoteForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const tests = document.getElementById('q_tests').value.trim();
-            const context = document.getElementById('q_context').value.trim();
-            const samples = document.getElementById('q_samples').value.trim();
-            const tatPref = document.getElementById('q_tat_pref').value.trim();
-            const name = document.getElementById('q_name').value.trim();
-            const email = document.getElementById('q_email').value.trim();
-            const company = document.getElementById('q_company').value.trim();
-            const phone = document.getElementById('q_phone').value.trim();
-            const reference = document.getElementById('q_reference').value.trim();
-            const billing = document.getElementById('q_billing').value.trim();
-            const vat = document.getElementById('q_vat').value.trim();
-
-            if (!tests) { alert('Please specify the test(s) you want quoted.'); return; }
-            if (!name || !email) { alert('Please provide your name and email.'); return; }
-
-            // Build the message/context for the server
-            let message = tests;
-            if (samples) { message = `Quote for ${samples} sample(s): ${message}`; }
-            let extra = context;
-            if (tatPref) { extra = `${extra}\nPreferred TAT: ${tatPref}`.trim(); }
-
-            const payload = {
-                message,
-                session_id: sessionId,
-                context: extra || undefined,
-                client: {
-                    name, email,
-                    company: company || undefined,
-                    phone: phone || undefined,
-                    reference: reference || undefined,
-                    billing_address: billing || undefined,
-                    vat_no: vat || undefined
-                }
-            };
-
-            try {
-                const res = await fetch('/quote/pdf', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                const res = await fetch('/api/quote/pdf', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: 'Generate PDF quote', session_id: sessionId })
                 });
-                if (!res.ok) {
-                    const txt = await res.text();
-                    throw new Error(txt || 'Failed to generate PDF');
-                }
+                const ref = res.headers.get('X-Quote-Ref') || '';
+                const valid = res.headers.get('X-Quote-Valid-Until') || '';
                 const blob = await res.blob();
-                const url = URL.createObjectURL(blob);
+                const url = window.URL.createObjectURL(blob);
                 const a = document.createElement('a');
-                a.href = url; a.download = 'highveld_quote.pdf';
-                document.body.appendChild(a); a.click(); a.remove();
-                URL.revokeObjectURL(url);
-                closeQuoteModal();
-                addMsg('bot', 'I’ve prepared your quote. The PDF has been downloaded.');
-            } catch (err) {
-                alert('Sorry, could not generate the quote.');
+                a.href = url; a.download = 'quote.pdf'; a.click();
+                window.URL.revokeObjectURL(url);
+                let msg = 'Downloaded your PDF quote.';
+                if (ref || valid) {
+                    msg = `Your PDF quote${ref ? ' (ref ' + ref + ')' : ''}${valid ? ' — valid until ' + valid : ''} has been downloaded.`;
+                }
+                addMessage('ai', msg + ' Is there anything else I can assist with? I can share drop-off details, lab hours, sample preparation guidance, or connect you with a consultant.');
+            } catch {
+                addMessage('ai', 'Could not generate PDF right now.');
             }
-        });
+        }
+
+        // Simple session continuity across page reloads
+        function uuid() { return crypto.randomUUID ? crypto.randomUUID() : (Date.now() + '-' + Math.random().toString(16).slice(2)); }
+        const sessionId = (() => {
+            try {
+                const saved = localStorage.getItem('hvb_session_id');
+                if (saved) return saved;
+                const sid = uuid();
+                localStorage.setItem('hvb_session_id', sid);
+                return sid;
+            } catch { return uuid(); }
+        })();
+
+        function el(tag, cls, text) { const n = document.createElement(tag); if (cls) n.className = cls; if (text !== undefined) n.textContent = text; return n; }
+        function addMessage(role, text) {
+            const row = el('div', 'msg ' + (role === 'user' ? 'user' : 'ai'));
+            row.appendChild(el('div', 'avatar', role === 'user' ? 'U' : 'H'));
+            const bubble = el('div', 'bubble', text);
+            row.appendChild(bubble);
+            // Render quick-reply chips for numbered options
+            if (role !== 'user' && /(?:^|\n)\d+\.\s/.test(text)) {
+                const lines = text.split('\n');
+                const opts = lines.filter(l => /^\d+\.\s+/.test(l)).map(l => ({n: l.split('.')[0].trim(), t: l.replace(/^\d+\.\s+/, '')}));
+                if (opts.length) {
+                    const chips = el('div', 'chips');
+                    opts.forEach(o => {
+                        const b = el('button', 'chip', o.n + '. ' + o.t.split('—')[0].trim());
+                        b.type = 'button';
+                        b.addEventListener('click', () => sendMessage(o.n));
+                        chips.appendChild(b);
+                    });
+                    row.appendChild(chips);
+                }
+            }
+            chatEl.appendChild(row);
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
+        function addSpinner() {
+            const row = el('div', 'msg ai'); row.id = 'spinner-row';
+            row.innerHTML = '<div class="avatar">H</div><div class="bubble"><span class="spinner"></span> Thinking…</div>';
+            chatEl.appendChild(row); chatEl.scrollTop = chatEl.scrollHeight;
+        }
+        function removeSpinner() { const s = document.getElementById('spinner-row'); if (s) s.remove(); }
+
+        async function sendMessage(text) {
+            if (!text || !text.trim()) return;
+            addMessage('user', text.trim());
+            inputEl.value = '';
+            addSpinner();
+            try {
+                const res = await fetch('/api/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                    body: JSON.stringify({ question: text.trim(), session_id: sessionId })
+                });
+                const data = await res.json();
+                removeSpinner();
+                const answer = typeof data.answer === 'string' ? data.answer : JSON.stringify(data);
+                addMessage('ai', answer);
+                try {
+                    const ready = data && data.meta && data.meta.ready_for_pdf;
+                    // Keep button hidden; use chat-only CTA
+                    if (ready && !wasReadyForPdf) {
+                        addMessage('ai', 'Everything looks good. Would you like me to generate a PDF quote now? Reply "yes" to proceed.');
+                    }
+                    wasReadyForPdf = !!ready;
+                } catch {}
+                // Auto-generate if the user typed the command or affirmed when ready
+                if (/generate\s+pdf\s+quote/i.test(text) || (wasReadyForPdf && /^\s*yes\b/i.test(text))) {
+                    setTimeout(generatePdf, 200);
+                }
+            } catch {
+                removeSpinner();
+                addMessage('ai', 'Network error. Please try again.');
+            }
+        }
+
+        sendBtn.addEventListener('click', () => sendMessage(inputEl.value));
+        inputEl.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(inputEl.value); } });
+        // Handle floating PDF generation
+        // No PDF button
+
+        // Client form removed; generation handled by floating button when ready
     </script>
 </body>
 

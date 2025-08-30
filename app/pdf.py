@@ -2,140 +2,175 @@ from __future__ import annotations
 
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Dict, List
+from typing import List, Dict, Optional
 
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import A4
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import mm
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
-import os
+# Optional ReportLab imports; provide a safe fallback if unavailable
+try:  # pragma: no cover
+    from reportlab.lib.pagesizes import A4  # type: ignore
+    from reportlab.lib import colors  # type: ignore
+    from reportlab.lib.units import mm  # type: ignore
+    from reportlab.pdfgen import canvas  # type: ignore
 
-
-BRAND_PRIMARY = colors.HexColor("#0f1e2e")  # deep navy
-BRAND_ACCENT = colors.HexColor("#19a3a3")   # teal
-
-
-def _fmt_price(v: float | int | str) -> str:
-    try:
-        x = float(v)  # type: ignore[arg-type]
-        return f"R{x:,.2f}"
-    except Exception:
-        return str(v)
+    _HAS_REPORTLAB = True
+except Exception:  # pragma: no cover
+    A4 = (595.27, 841.89)  # default A4 size in points
+    colors = type("_C", (), {"black": 0, "grey": 0})()  # minimal stub
+    mm = 2.83465  # approx conversion
+    canvas = None
+    _HAS_REPORTLAB = False
 
 
-def render_quote_pdf(quote: Dict[str, Any], client: Dict[str, Any] | None = None) -> bytes:
-    """Render a simple brand-aligned PDF for a quote.
-
-    Expected `quote` shape:
-      {
-        "tests": [{"test_name": str, "price_ZAR": number, "turnaround_days": number}, ...],
-        "total_price_ZAR": number,
-        "notes": str,
-        "next_step": str,
-      }
-
-    `client` can include: name, company, email, phone, reference, billing_address, vat_no.
+def generate_quote_pdf(
+    client: Dict,
+    items: List[Dict],
+    message: str,
+    notes: Optional[str] = "",
+    *,
+    quote_ref: Optional[str] = None,
+    valid_until: Optional[str] = None,
+    total_price_ZAR: Optional[float] = None,
+    disclaimers: Optional[
+        str
+    ] = "Prices exclude VAT unless otherwise stated. Turnaround time subject to laboratory workload. Quote valid for 14 days. All testing complies with SANS 241 standards.",
+) -> bytes:
     """
+    Render a simple, branded quote that lists requested tests and the sample counts.
+    Falls back to a tiny placeholder PDF if ReportLab is not installed.
+    """
+    if not _HAS_REPORTLAB:
+        # Minimal placeholder PDF bytes so callers can still download something in constrained envs
+        ts = datetime.utcnow().isoformat()[:19].replace("T", " ")
+        content = f"Highveld Biotech Quote\nGenerated: {ts}\nClient: {client.get('name','')}\nItems: {len(items or [])}\nMessage: {message[:80]}\n"
+        # Not a full PDF; but sufficient for tests that only import this module
+        return "%PDF-1.1\n%\xe2\xe3\xcf\xd3\n1 0 obj<<>>endobj\n".encode("latin1") + content.encode(
+            "utf-8"
+        )
+
+    # Real PDF path using ReportLab
     buf = BytesIO()
-    doc = SimpleDocTemplate(buf, pagesize=A4, leftMargin=18*mm,
-                            rightMargin=18*mm, topMargin=16*mm, bottomMargin=16*mm)
+    c = canvas.Canvas(buf, pagesize=A4)
+    width, height = A4
 
-    styles = getSampleStyleSheet()
-    title_style = ParagraphStyle(
-        name="Title",
-        parent=styles["Title"],
-        textColor=BRAND_PRIMARY,
-        fontSize=18,
-        leading=22,
-    )
-    h_style = ParagraphStyle(
-        name="Heading", parent=styles["Heading2"], textColor=BRAND_PRIMARY)
-    body = styles["BodyText"]
-
-    elems: List[Any] = []
-
-    # Header with optional logo
-    logo_path = os.path.join(os.path.dirname(
-        os.path.dirname(__file__)), "logo.png")
-    if os.path.isfile(logo_path):
-        try:
-            img = Image(logo_path, width=26*mm, height=26*mm)
-            elems.append(img)
-            elems.append(Spacer(1, 4))
-        except Exception:
-            pass
-    elems.append(Paragraph("Highveld Biotech – Quote", title_style))
-    elems.append(Spacer(1, 6))
-    elems.append(Paragraph(datetime.now().strftime("%d %b %Y, %H:%M"), body))
-    elems.append(Spacer(1, 12))
+    # Header
+    c.setFont("Helvetica-Bold", 14)
+    c.drawString(20 * mm, height - 20 * mm, "Highveld Biotech — Quote")
+    c.setFont("Helvetica", 10)
+    c.drawString(20 * mm, height - 26 * mm, message[:1000])
+    # Ref + validity
+    y = height - 33 * mm
+    c.setFont("Helvetica", 9)
+    if quote_ref:
+        c.drawString(20 * mm, y, f"Reference: {quote_ref}")
+    if valid_until:
+        c.drawRightString(190 * mm, y, f"Valid until: {valid_until}")
+    y -= 5 * mm
 
     # Client block
-    client = client or {}
-    c_lines = []
-    if client.get("name"):
-        c_lines.append(f"Client: {client['name']}")
-    if client.get("company"):
-        c_lines.append(f"Company: {client['company']}")
-    if client.get("email"):
-        c_lines.append(f"Email: {client['email']}")
-    if client.get("phone"):
-        c_lines.append(f"Phone: {client['phone']}")
+    c.setFont("Helvetica-Bold", 10)
+    c.drawString(20 * mm, y, "Client")
+    y -= 6 * mm
+    c.setFont("Helvetica", 10)
+    c.drawString(20 * mm, y, f"Name: {client.get('name','')}")
+    y -= 6 * mm
+    c.drawString(20 * mm, y, f"Email: {client.get('email','')}")
+    y -= 6 * mm
+    c.drawString(20 * mm, y, f"Company: {client.get('company','')}")
+    y -= 6 * mm
+    c.drawString(20 * mm, y, f"Phone: {client.get('phone','')}")
+    y -= 6 * mm
     if client.get("reference"):
-        c_lines.append(f"Reference: {client['reference']}")
+        c.drawString(20 * mm, y, f"Reference: {client.get('reference')}")
+        y -= 6 * mm
     if client.get("billing_address"):
-        c_lines.append(f"Billing Address: {client['billing_address']}")
+        c.drawString(20 * mm, y, f"Billing address: {str(client.get('billing_address'))[:90]}")
+        y -= 6 * mm
     if client.get("vat_no"):
-        c_lines.append(f"VAT No: {client['vat_no']}")
-    if c_lines:
-        elems.append(Paragraph("Client Details", h_style))
-        elems.append(Spacer(1, 6))
-        for line in c_lines:
-            elems.append(Paragraph(line, body))
-        elems.append(Spacer(1, 12))
+        c.drawString(20 * mm, y, f"VAT: {client.get('vat_no')}")
+        y -= 6 * mm
 
-    # Items table
-    items = quote.get("tests") or []
-    data = [["Test", "Price (ZAR)", "TAT (days)"]]
-    for t in items:
-        name = t.get("test_name") or t.get("name") or ""
-        price = _fmt_price(t.get("price_ZAR", ""))
-        tat = t.get("turnaround_days", "")
-        data.append([name, price, tat])
+    # Table header
+    y -= 2 * mm
+    c.setFont("Helvetica-Bold", 11)
+    c.drawString(20 * mm, y, "Requested tests")
+    y -= 8 * mm
+    c.setFont("Helvetica-Bold", 10)
+    # Columns: Test | Price | TAT | Qty | Line Total
+    c.drawString(20 * mm, y, "Test")
+    c.drawRightString(130 * mm, y, "Price")
+    c.drawRightString(150 * mm, y, "TAT")
+    c.drawRightString(170 * mm, y, "Qty")
+    c.drawRightString(190 * mm, y, "Line total")
+    y -= 4 * mm
+    c.setStrokeColor(colors.black)
+    c.line(20 * mm, y, 190 * mm, y)
+    y -= 6 * mm
 
-    tbl = Table(data, colWidths=[100*mm, 35*mm, 25*mm])
-    tbl.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), BRAND_PRIMARY),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("ALIGN", (1, 1), (-1, -1), "RIGHT"),
-        ("ALIGN", (0, 0), (0, -1), "LEFT"),
-        ("GRID", (0, 0), (-1, -1), 0.25, colors.HexColor("#dbe2ea")),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1),
-         [colors.HexColor("#f7fafc"), colors.white]),
-    ]))
-    elems.append(tbl)
-    elems.append(Spacer(1, 10))
+    # Items (use price_ZAR if present; else show as "-" and totals omitted)
+    c.setFont("Helvetica", 10)
+    running = 0.0
+    any_priced = False
+    for it in items or []:
+        if y < 30 * mm:
+            c.showPage()
+            width, height = A4
+            y = height - 20 * mm
+            c.setFont("Helvetica", 10)
+        name = str(it.get("name", ""))[:64]
+        qty = int(it.get("quantity", 1) or 1)
+        price = it.get("price_ZAR", None)
+        tat = it.get("turnaround_days", None)
+        line_total = None
+        if price not in (None, ""):
+            try:
+                pv = float(price)
+                any_priced = True
+                line_total = pv * qty
+                running += line_total
+            except Exception:
+                pv, line_total = None, None
+        c.drawString(20 * mm, y, name)
+        c.drawRightString(
+            130 * mm, y, f"R{float(price):,.2f}" if isinstance(price, (int, float)) else "-"
+        )
+        c.drawRightString(
+            150 * mm, y, (str(int(tat)) + " d") if isinstance(tat, (int, float)) else "-"
+        )
+        c.drawRightString(170 * mm, y, str(qty))
+        c.drawRightString(
+            190 * mm,
+            y,
+            f"R{line_total:,.2f}" if isinstance(line_total, (int, float, float)) else "-",
+        )
+        y -= 6 * mm
 
-    # Total
-    total = quote.get("total_price_ZAR", 0)
-    elems.append(Paragraph(f"<b>Total:</b> {_fmt_price(total)}", body))
-    elems.append(Spacer(1, 8))
+    # Totals
+    y -= 4 * mm
+    if any_priced:
+        c.setStrokeColor(colors.black)
+        c.line(130 * mm, y, 190 * mm, y)
+        y -= 6 * mm
+        total = total_price_ZAR if isinstance(total_price_ZAR, (int, float)) else running
+        c.setFont("Helvetica-Bold", 10)
+        c.drawRightString(170 * mm, y, "Total")
+        c.drawRightString(190 * mm, y, f"R{float(total):,.2f}")
+        y -= 8 * mm
 
     # Notes
-    notes = (quote.get("notes") or "").strip()
     if notes:
-        elems.append(Paragraph("Notes", h_style))
-        elems.append(Spacer(1, 4))
-        elems.append(Paragraph(notes, body))
-        elems.append(Spacer(1, 8))
+        c.setFont("Helvetica-Bold", 10)
+        c.drawString(20 * mm, y, "Notes")
+        y -= 6 * mm
+        c.setFont("Helvetica", 10)
+        for line in (notes or "").splitlines()[:8]:
+            c.drawString(20 * mm, y, line[:110])
+            y -= 6 * mm
+        y -= 4 * mm
 
-    # Footer / contact
-    elems.append(Spacer(1, 12))
-    contact = Paragraph(
-        f"<font color='{BRAND_ACCENT}'>labsales@highveldbiotech.com</font> · Highveld Biotech SA PTY Ltd.", body
-    )
-    elems.append(contact)
-
-    doc.build(elems)
+    # Footer
+    c.setFont("Helvetica", 8)
+    c.setFillColor(colors.grey)
+    c.drawString(20 * mm, 15 * mm, disclaimers or "")
+    c.setFillColor(colors.black)
+    c.showPage()
+    c.save()
     return buf.getvalue()

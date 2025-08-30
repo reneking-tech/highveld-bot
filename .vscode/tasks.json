@@ -5,32 +5,49 @@
 			"label": "Run tests",
 			"type": "shell",
 			"command": "pytest -q",
-			"group": "test"
-		},
-		{
-			"label": "Run tests (venv python)",
-			"type": "shell",
-			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m pytest -q",
-			"group": "test"
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			}
 		},
 		{
 			"label": "Run tests (venv)",
 			"type": "shell",
-			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m pytest -q",
+			"command": "${workspaceFolder}/.venv/bin/python -m pytest -q",
 			"group": "test"
-		}
-		,
+		},
 		{
 			"label": "Lint (ruff)",
 			"type": "shell",
-			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m ruff check .",
-			"group": "test"
+			"command": "${workspaceFolder}/.venv/bin/python -m ruff check .",
+			"group": "build"
 		},
 		{
 			"label": "Typecheck (mypy)",
 			"type": "shell",
-			"command": "/Users/stay-c/Desktop/highveld_bot/.venv/bin/python -m mypy .",
-			"group": "test"
+			"command": "${workspaceFolder}/.venv/bin/python -m mypy .",
+			"group": "build"
+		},
+		{
+			"label": "Build data + index",
+			"type": "shell",
+			"command": "${workspaceFolder}/.venv/bin/python app/build_all.py",
+			"group": "build",
+			"problemMatcher": []
+		},
+		{
+			"label": "Run API",
+			"type": "shell",
+			"command": "${workspaceFolder}/.venv/bin/python run_api.py",
+			"options": {
+				"env": {
+					"RESPONSE_FORMAT": "plain",
+					"RESPONSE_INCLUDE_SOURCES": "0",
+					"RESPONSE_INCLUDE_SESSION_ID": "0",
+					"RAG_TOP_K": "4"
+				}
+			},
+			"group": "none"
 		}
 	]
 }
